@@ -35,14 +35,15 @@ const char* msgs[] = {
 
 const size_t nMsgs = sizeof(msgs) / sizeof(void*);
 
-AUDIO_SEQUENCE_PARAMS pAudioSequences[7] = {
+AUDIO_SEQUENCE_PARAMS pAudioSequences[8] = {
 		{ 8000, 8000 * 30, AudioSequence1 },
 		{ 8000, 8000 * 30, AudioSequence2 },
 		{ 8000, 8000 * 30, AudioSequence3 },
 		{ 8000, 8000 * 30, AudioSequence4 },
 		{ 8000, 8000 * 30, AudioSequence5 },
 		{ 8000, 8000 * 30, AudioSequence6 },
-		{ 8000, 8000 * 30, AudioSequence7 }
+		{ 8000, 8000 * 30, AudioSequence7 },
+		{ 44100, 44100 * 30, AudioSequence8 }
 };
 
 DWORD random(VOID) {
@@ -276,7 +277,7 @@ VOID ExecuteShader(FX_SHADER shader, DWORD dwTime) {
 	RedrawWindow(0, 0, 0, 133);
 
 	seedxorshift32(__rdtsc());
-	//HANDLE hHeap = GetProcessHeap();
+	HANDLE hHeap = GetProcessHeap();
 
 	HDC hdcScreen = GetDC(NULL);
 
@@ -291,9 +292,9 @@ VOID ExecuteShader(FX_SHADER shader, DWORD dwTime) {
 	bminf.bmiHeader.biWidth = szScreen.cx;
 	bminf.bmiHeader.biHeight = szScreen.cy;
 
-	//PRGBQUAD pixlz = (PRGBQUAD)HeapAlloc(hHeap, 0, szScreen.cx * szScreen.cy * sizeof(COLORREF));
+	PRGBQUAD pixlz = (PRGBQUAD)HeapAlloc(hHeap, 0, szScreen.cx * szScreen.cy * sizeof(COLORREF));
 
-	PRGBQUAD pixlz = { 0 };
+	//PRGBQUAD pixlz = { 0 };
 
 	HBITMAP hBitmap = CreateDIBSection(hdcScreen, &bminf, 0, &pixlz, NULL, 0);
 	SelectObject(hcdcScreen, hBitmap);
@@ -306,7 +307,7 @@ VOID ExecuteShader(FX_SHADER shader, DWORD dwTime) {
 		BitBlt(hdcScreen, ptScreen.x, ptScreen.y, szScreen.cx, szScreen.cy, hcdcScreen, ptScreen.x, ptScreen.y, SRCCOPY);
 	}
 
-	//HeapFree(hHeap, 0, pixlz);
+	HeapFree(hHeap, 0, pixlz);
 
 	DeleteObject(hBitmap);
 	DeleteDC(hcdcScreen);
@@ -360,14 +361,16 @@ VOID WINAPI ExecuteAudioSequence(
 }
 
 VOID WINAPI AudioThread(VOID) {
-	for (INT i = 0; i <= 6; i++) {
-		ExecuteAudioSequence(
-			pAudioSequences[i].nSamplesPerSec,
-			pAudioSequences[i].nSampleCount,
-			pAudioSequences[i].pAudioSequence,
-			pAudioSequences[i].pPreAudioOp,
-			pAudioSequences[i].pPostAudioOp
-		);
+	for (;;) {
+		for (INT i = 0; i <= 7; i++) {
+			ExecuteAudioSequence(
+				pAudioSequences[i].nSamplesPerSec,
+				pAudioSequences[i].nSampleCount,
+				pAudioSequences[i].pAudioSequence,
+				pAudioSequences[i].pPreAudioOp,
+				pAudioSequences[i].pPostAudioOp
+			);
+		}
 	}
 }
 
@@ -432,7 +435,7 @@ VOID AudioSequence6(
 	_Inout_ PSHORT psSamples
 ) {
 	for (INT t = 0; t < nSampleCount * 2; t++) {
-		BYTE bFreq = (BYTE)(((-t & 4095) * (255 & t * (t & t >> 13)) >> 12) + (127 & t * (234 & t >> 8 & t >> 3) >> (3 & t >> 14)));
+		BYTE bFreq = (BYTE)((t * (t >> 13 | t >> 8) | t >> 16 ^ t) - 64);
 		((BYTE*)psSamples)[t] = bFreq;
 	}
 }
@@ -444,6 +447,17 @@ VOID AudioSequence7(
 ) {
 	for (INT t = 0; t < nSampleCount * 2; t++) {
 		BYTE bFreq = (BYTE)(100 * ((t << 2 | t >> 5 | t ^ 63) & (t << 10 | t >> 11)));
+		((BYTE*)psSamples)[t] = bFreq;
+	}
+}
+
+VOID AudioSequence8(
+	_In_ INT nSamplesPerSec,
+	_In_ INT nSampleCount,
+	_Inout_ PSHORT psSamples
+) {
+	for (INT t = 1; t < nSampleCount * 2; t++) {
+		BYTE bFreq = (BYTE)(t / 6 * (t / t + (t >> 12) % 6 + (t >> 16) % 3) * 10 & 64);
 		((BYTE*)psSamples)[t] = bFreq;
 	}
 }

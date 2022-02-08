@@ -96,4 +96,5 @@ extern AUDIO_SEQUENCE AudioSequence4;
 extern AUDIO_SEQUENCE AudioSequence5;
 extern AUDIO_SEQUENCE AudioSequence6;
 extern AUDIO_SEQUENCE AudioSequence7;
+extern AUDIO_SEQUENCE AudioSequence8;
 #pragma endregion AudioSequence

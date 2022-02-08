@@ -24,4 +24,6 @@ The destruction part has not been written yet, so feel free to run it on your co
 ## License
 This project is licensed with AGPL-3.0. If you use the code in this project, then your project must be open source.
 
-source code used: [Monoxide](https://github.com/whypet/Monoxide)
+Source code used: [Monoxide](https://github.com/whypet/Monoxide)
+
+Check out [Hydrogen.exe](https://github.com/LeoLezury/Hydrogen) here, it's also a malware project, created by Leo.
