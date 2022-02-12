@@ -35,15 +35,14 @@ const char* msgs[] = {
 
 const size_t nMsgs = sizeof(msgs) / sizeof(void*);
 
-AUDIO_SEQUENCE_PARAMS pAudioSequences[8] = {
+AUDIO_SEQUENCE_PARAMS pAudioSequences[7] = {
 		{ 8000, 8000 * 30, AudioSequence1 },
 		{ 8000, 8000 * 30, AudioSequence2 },
 		{ 8000, 8000 * 30, AudioSequence3 },
 		{ 8000, 8000 * 30, AudioSequence4 },
 		{ 8000, 8000 * 30, AudioSequence5 },
 		{ 8000, 8000 * 30, AudioSequence6 },
-		{ 8000, 8000 * 30, AudioSequence7 },
-		{ 44100, 44100 * 30, AudioSequence8 }
+		{ 8000, 8000 * 30, AudioSequence7 }
 };
 
 DWORD random(VOID) {
@@ -130,6 +129,7 @@ VOID ExecutePayload(FX_PAYLOAD payload, DWORD dwTime) {
 VOID Payload1(_In_ INT t, _In_ HDC hdcScreen) {
 	POINT ptScreen = GetVirtualScreenPos();
 	SIZE szScreen = GetVirtualScreenSize();
+	t *= 20;
 	BitBlt(hdcScreen, ptScreen.x, ptScreen.y, szScreen.cx, szScreen.cy, hdcScreen, ptScreen.x + t % (szScreen.cx * 2) - szScreen.cx, ptScreen.y + t % (szScreen.cy * 2) - szScreen.cy, NOTSRCERASE);
 	HBRUSH randrgb = CreateSolidBrush(RGB(xorshift32() % 255, xorshift32() % 255, xorshift32() % 255));
 	SelectObject(hdcScreen, randrgb);
@@ -180,7 +180,7 @@ VOID Payload4(_In_ INT t, _In_ HDC hdcScreen) {
 	blf.BlendFlags = 0;
 	blf.SourceConstantAlpha = 128;
 	blf.AlphaFormat = 0;
-	
+
 	SelectObject(hcdcScreen, hBitmap);
 
 	BitBlt(hcdcScreen, ptScreen.x, ptScreen.y, szScreen.cx, szScreen.cy, hdcScreen, ptScreen.x, ptScreen.y, SRCCOPY);
@@ -246,31 +246,6 @@ VOID Payload5(_In_ INT t, _In_ HDC hdcScreen) {
 
 	DeleteObject(hBitmap);
 	DeleteObject(hcdcScreen);
-}
-
-VOID Payload6(_In_ INT t, _In_ HDC hdcScreen) {
-	POINT ptScreen = GetVirtualScreenPos();
-	SIZE szScreen = GetVirtualScreenSize();
-	HDC hcdcScreen = CreateCompatibleDC(hdcScreen);
-	HBITMAP hBitmap = CreateCompatibleBitmap(hdcScreen, szScreen.cx, szScreen.cy);
-
-	if ((t % 6) == 6) {
-		RedrawWindow(0, 0, 0, 133);
-	}
-
-	SelectObject(hcdcScreen, hBitmap);
-
-	BitBlt(hcdcScreen, ptScreen.x, ptScreen.y, szScreen.cx, szScreen.cy, hdcScreen, ptScreen.x, ptScreen.y, SRCCOPY);
-
-	BitBlt(hcdcScreen, ptScreen.x, ptScreen.y + 5, szScreen.cx, szScreen.cy, hdcScreen, ptScreen.x, ptScreen.y, SRCAND);
-	BitBlt(hcdcScreen, ptScreen.x, ptScreen.y - 5, szScreen.cx, szScreen.cy, hdcScreen, ptScreen.x, ptScreen.y, SRCAND);
-
-	BitBlt(hdcScreen, ptScreen.x, ptScreen.y, szScreen.cx, szScreen.cy, hcdcScreen, ptScreen.x, ptScreen.y, SRCCOPY);
-
-	DeleteObject(hBitmap);
-	DeleteObject(hcdcScreen);
-
-	Sleep(50);
 }
 
 VOID ExecuteShader(FX_SHADER shader, DWORD dwTime) {
@@ -362,7 +337,7 @@ VOID WINAPI ExecuteAudioSequence(
 
 VOID WINAPI AudioThread(VOID) {
 	for (;;) {
-		for (INT i = 0; i <= 7; i++) {
+		for (INT i = 0; i < 7; i++) {
 			ExecuteAudioSequence(
 				pAudioSequences[i].nSamplesPerSec,
 				pAudioSequences[i].nSampleCount,
@@ -447,17 +422,6 @@ VOID AudioSequence7(
 ) {
 	for (INT t = 0; t < nSampleCount * 2; t++) {
 		BYTE bFreq = (BYTE)(100 * ((t << 2 | t >> 5 | t ^ 63) & (t << 10 | t >> 11)));
-		((BYTE*)psSamples)[t] = bFreq;
-	}
-}
-
-VOID AudioSequence8(
-	_In_ INT nSamplesPerSec,
-	_In_ INT nSampleCount,
-	_Inout_ PSHORT psSamples
-) {
-	for (INT t = 1; t < nSampleCount * 2; t++) {
-		BYTE bFreq = (BYTE)(t / 6 * (t / t + (t >> 12) % 6 + (t >> 16) % 3) * 10 & 64);
 		((BYTE*)psSamples)[t] = bFreq;
 	}
 }

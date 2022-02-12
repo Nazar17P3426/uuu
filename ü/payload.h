@@ -46,7 +46,7 @@ typedef union _RGBQUAD {
 		BYTE r;
 		BYTE unused;
 	};
-} * PRGBQUAD;
+} *PRGBQUAD;
 
 typedef VOID(FX_PAYLOAD)(_In_ INT t, _In_ HDC hdcScreen);
 
@@ -72,9 +72,6 @@ extern FX_PAYLOAD Payload3;
 extern FX_PAYLOAD Payload4;
 extern FX_PAYLOAD Payload4A;
 extern FX_PAYLOAD Payload5;
-extern FX_PAYLOAD Payload6;
-extern FX_PAYLOAD Payload7;
-extern FX_PAYLOAD Payload8;
 
 extern FX_SHADER Shader1;
 extern FX_SHADER Shader2;
