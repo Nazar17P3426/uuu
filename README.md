@@ -11,15 +11,15 @@
 		<img src="https://img.shields.io/github/license/srcatt/u" alt="license">
 	</a>
 	<a href="#">
-		<img src="https://img.shields.io/badge/platform-Windows%20XP+-blue" alt="license">
+		<img src="https://img.shields.io/badge/platform-Windows%20XP+-green" alt="license">
 	</a>
 </p>
 
 ü.exe is a malware creates flashy screen effects, and destroy the partitions of your computer (not now).
 
-Supported systems: Windows XP+, *wine*
+Supported systems: Windows XP+
 
-The destruction part has not been written yet, so feel free to run it on your computer. This line will be deleted when the destruction part is finished.
+The destruction part has not been written yet ~~im lazy~~, so feel free to run it on your computer.
 
 ## License
 This project is licensed with AGPL-3.0. If you use the code in this project, then your project must be open source.
