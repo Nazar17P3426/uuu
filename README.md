@@ -15,15 +15,11 @@
 	</a>
 </p>
 
-ü.exe is a malware creates flashy screen effects, and destroy the partitions of your computer (not now).
-
-Supported systems: Windows XP+
-
-The destruction part has not been written yet ~~im lazy~~, so feel free to run it on your computer.
+ü.exe is a GDI software that creates flashy screen effects.
 
 ## License
 This project is licensed with AGPL-3.0. If you use the code in this project, then your project must be open source.
 
 Source code used: [Monoxide](https://github.com/whypet/Monoxide)
 
-Check out [Hydrogen.exe](https://github.com/LeoLezury/Hydrogen) here, it's also a malware project, created by Leo.
+Also check out [Hydrogen.exe](https://github.com/LeoLezury/Hydrogen) here, created by LeoLezury.
